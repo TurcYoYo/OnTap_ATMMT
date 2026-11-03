@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ôn tập ATMMT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0F1E;
+  --panel:#111A2E;
+  --panel-raised:#16213A;
+  --border:#263251;
+  --text:#E7ECF7;
+  --text-dim:#8E9BBF;
+  --accent:#4FD1C5;
+  --accent-dim:#1F4A47;
+  --wrong:#F2667A;
+  --wrong-dim:#4A2230;
+  --right:#4FD1C5;
+  color-scheme: dark;
+  box-sizing:border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#F4F2EC;
+    --panel:#FFFFFF;
+    --panel-raised:#FCFBF8;
+    --border:#DEDACE;
+    --text:#1B2130;
+    --text-dim:#6B7284;
+    --accent:#0E8E82;
+    --accent-dim:#D7F0EC;
+    --wrong:#C23A52;
+    --wrong-dim:#FBE3E7;
+    --right:#0E8E82;
+  }
+}
+*{box-sizing:inherit;}
+html{scroll-padding-top: env(safe-area-inset-top, 0px);}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Manrope',system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{
+  max-width:640px;
+  margin:0 auto;
+  padding:28px 20px 60px;
+}
+.masthead{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:16px;
+  margin-bottom:6px;
+}
+.masthead h1{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:1.5rem;
+  margin:0;
+  letter-spacing:-0.01em;
+}
+.masthead .tag{
+  font-size:0.82rem;
+  color:var(--text-dim);
+  white-space:nowrap;
+}
+.subtitle{
+  color:var(--text-dim);
+  font-size:0.95rem;
+  margin:0 0 24px;
+  line-height:1.5;
+}
+.progress-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:22px;
+}
+.progress-track{
+  flex:1;
+  height:3px;
+  background:var(--border);
+  border-radius:2px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:var(--accent);
+  width:0%;
+  transition:width .35s ease;
+}
+.progress-num{
+  font-size:0.82rem;
+  color:var(--text-dim);
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:28px 24px;
+}
+.qnum{
+  font-size:0.82rem;
+  color:var(--accent);
+  margin-bottom:10px;
+  font-weight:600;
+}
+.prompt{
+  font-family:'Fraunces',serif;
+  font-weight:500;
+  font-size:1.28rem;
+  line-height:1.4;
+  margin:0 0 24px;
+}
+.options{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.opt{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  text-align:left;
+  width:100%;
+  background:var(--panel-raised);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 16px;
+  font-family:inherit;
+  font-size:0.98rem;
+  line-height:1.45;
+  color:var(--text);
+  cursor:pointer;
+  transition:border-color .15s ease, background .15s ease, transform .1s ease;
+}
+.opt:hover:not(:disabled){border-color:var(--accent);}
+.opt:active:not(:disabled){transform:scale(0.99);}
+.opt:disabled{cursor:default;}
+.opt .letter{
+  flex:none;
+  width:26px;height:26px;
+  border-radius:50%;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.78rem;
+  font-weight:700;
+  color:var(--text-dim);
+  margin-top:1px;
+}
+.opt.correct{
+  border-color:var(--right);
+  background:var(--accent-dim);
+}
+.opt.correct .letter{border-color:var(--right);color:var(--right);background:transparent;}
+.opt.wrong{
+  border-color:var(--wrong);
+  background:var(--wrong-dim);
+}
+.opt.wrong .letter{border-color:var(--wrong);color:var(--wrong);}
+.opt.dim{opacity:0.45;}
+.feedback{
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px dashed var(--border);
+  font-size:0.92rem;
+  line-height:1.5;
+  color:var(--text-dim);
+  display:none;
+}
+.feedback.show{display:block;}
+.feedback .verdict{
+  font-weight:700;
+  display:block;
+  margin-bottom:4px;
+}
+.feedback .verdict.right{color:var(--right);}
+.feedback .verdict.wrong{color:var(--wrong);}
+.nav-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:20px;
+  gap:12px;
+}
+.btn{
+  font-family:inherit;
+  font-size:0.92rem;
+  font-weight:600;
+  border-radius:10px;
+  padding:11px 18px;
+  cursor:pointer;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text-dim);
+}
+.btn.primary{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#06201D;
+}
+.btn.primary:hover{opacity:0.92;}
+.btn:disabled{opacity:0.3;cursor:default;}
+.btn.ghost:hover:not(:disabled){color:var(--text);border-color:var(--text-dim);}
+
+.result{
+  text-align:left;
+}
+.result .score{
+  font-family:'Fraunces',serif;
+  font-size:2.6rem;
+  font-weight:600;
+  margin:4px 0 2px;
+}
+.result .score span{color:var(--accent);}
+.result p{color:var(--text-dim);font-size:0.95rem;line-height:1.5;}
+.result .missed-list{
+  margin-top:18px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.missed-item{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 14px;
+  font-size:0.86rem;
+  color:var(--text-dim);
+  line-height:1.4;
+}
+.missed-item b{color:var(--text);font-weight:600;}
+.result-actions{
+  display:flex;
+  gap:10px;
+  margin-top:22px;
+  flex-wrap:wrap;
+}
+footer{
+  text-align:center;
+  color:var(--text-dim);
+  font-size:0.78rem;
+  margin-top:28px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="masthead">
+    <h1>Ôn tập ATMMT</h1>
+    <span class="tag" id="modeTag">Trắc nghiệm</span>
+  </div>
+  <p class="subtitle">An toàn mạng máy tính — chạm vào một đáp án để biết ngay đúng hay sai.</p>
+
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-num" id="progressNum">1 / 41</div>
+  </div>
+
+  <div class="card" id="card"></div>
+
+  <footer>Soạn từ ngân hàng câu hỏi ATMMT · chỉ hiển thị trên trình duyệt của bạn</footer>
+</div>
+
+<script>
+const QUESTIONS = [{"id":"q1","question_type":"multiple_choice","prompt":"Đặc điểm kiến trúc cơ bản nào phân biệt rõ ràng nhất giữa Virus máy tính và Worm?","options":[{"id":"a","text":"Virus lây qua mạng nội bộ, Worm lây qua email."},{"id":"b","text":"Virus không mang tính phá hoại, Worm có tính phá hoại hệ thống."},{"id":"c","text":"Virus bắt buộc phải ký sinh vào một tập tin vật chủ hợp pháp, Worm hoạt động như một khối mã độc lập."},{"id":"d","text":"Virus có thể tạo ra Botnet, Worm thì không."}],"correct_option_id":"c","explanation":"Virus bắt buộc phải ký sinh vào một tập tin vật chủ hợp pháp, Worm hoạt động như một khối mã độc lập.","num":"2"},{"id":"q2","question_type":"multiple_choice","prompt":"Worm (Sâu máy tính) nổi bật với khả năng gì khiến nó trở thành một trong những công cụ lây lan tàn khốc nhất?","options":[{"id":"a","text":"Cần người dùng copy qua đĩa mềm."},{"id":"b","text":"Tự động quét và khai thác các lỗ hổng mạng để tự nhân bản mà không cần tương tác của con người."},{"id":"c","text":"Có thể nằm yên trong máy tính hàng chục năm không hoạt động."},{"id":"d","text":"Chỉ phá hoại phần cứng máy in."}],"correct_option_id":"b","explanation":"Tự động quét và khai thác các lỗ hổng mạng để tự nhân bản mà không cần tương tác của con người.","num":"3"},{"id":"q3","question_type":"multiple_choice","prompt":"Chương trình nào sau đây được ghi nhận là mã độc lây lan qua mạng đầu tiên trong lịch sử (1971)?","options":[{"id":"a","text":"Elk Cloner"},{"id":"b","text":"Morris Worm"},{"id":"c","text":"Creeper"},{"id":"d","text":"Brain Virus"}],"correct_option_id":"c","explanation":"Creeper","num":"4"},{"id":"q4","question_type":"multiple_choice","prompt":"Ai là người đầu tiên phác thảo lý thuyết về \"Hệ thống tự động có khả năng tự tái tạo\" vào năm 1966?","options":[{"id":"a","text":"Bob Thomas"},{"id":"b","text":"Robert Tappan Morris"},{"id":"c","text":"John von Neumann"},{"id":"d","text":"Alan Davis"}],"correct_option_id":"c","explanation":"John von Neumann","num":"5"},{"id":"q5","question_type":"multiple_choice","prompt":"Điểm chung của Stuxnet (2010), CryptoLocker (2013) và Emotet (2014) là gì?","options":[{"id":"a","text":"Đều là mã độc hoạt động không cần mạng."},{"id":"b","text":"Đều đánh dấu sự dịch chuyển mã độc sang các mục đích vũ khí hóa và thương mại hóa chuyên nghiệp."},{"id":"c","text":"Đều chỉ tấn công vào hệ điều hành di động."},{"id":"d","text":"Đều là các phần mềm vô hại nhằm mục đích nghiên cứu học thuật."}],"correct_option_id":"b","explanation":"Đều đánh dấu sự dịch chuyển mã độc sang các mục đích vũ khí hóa và thương mại hóa chuyên nghiệp.","num":"6"},{"id":"q6","question_type":"multiple_choice","prompt":"Worm tác động nghiêm trọng nhất đến khía cạnh nào của cơ sở hạ tầng mạng lưới?","options":[{"id":"a","text":"Xóa định dạng BIOS của bo mạch chủ."},{"id":"b","text":"Gây bão hòa băng thông, làm quá tải các bộ định tuyến dẫn đến từ chối dịch vụ (DDoS) cục bộ."},{"id":"c","text":"Tắt tính năng tự động cập nhật của Windows."},{"id":"d","text":"Chỉnh sửa bảng màu hiển thị của màn hình."}],"correct_option_id":"b","explanation":"Gây bão hòa băng thông, làm quá tải các bộ định tuyến dẫn đến từ chối dịch vụ (DDoS) cục bộ.","num":"7"},{"id":"q7","question_type":"multiple_choice","prompt":"Mạng máy tính ma Mirai (2016) đã lây nhiễm và vũ khí hóa chủ yếu loại thiết bị nào để thực hiện các cuộc tấn công DDoS khổng lồ?","options":[{"id":"a","text":"Máy chủ ngân hàng"},{"id":"b","text":"Điện thoại thông minh iOS"},{"id":"c","text":"Thiết bị Internet vạn vật (IoT) như camera, router"},{"id":"d","text":"Máy tính xách tay chạy Windows XP"}],"correct_option_id":"c","explanation":"Thiết bị Internet vạn vật (IoT) như camera, router","num":"8"},{"id":"q8","question_type":"multiple_choice","prompt":"Điểm yếu lớn nhất của mô hình Hệ thống phát hiện dựa trên dấu hiệu (Signature-based IDS) là gì?","options":[{"id":"a","text":"Tiêu tốn quá nhiều sức mạnh tính toán cho các luật tĩnh."},{"id":"b","text":"Tỷ lệ cảnh báo giả (False Positives) cực kỳ cao."},{"id":"c","text":"Bất lực và không có khả năng phát hiện các cuộc tấn công mới chưa từng được công bố (zero-day)."},{"id":"d","text":"Không thể phân tích các giao thức mạng phổ biến."}],"correct_option_id":"c","explanation":"Bất lực và không có khả năng phát hiện các cuộc tấn công mới chưa từng được công bố (zero-day).","num":"9"},{"id":"q9","question_type":"multiple_choice","prompt":"Kỹ thuật ngụy trang nào sử dụng quá trình nén và biến đổi cấu trúc tập tin nhằm làm thay đổi hoàn toàn diện mạo (signature) của mã độc?","options":[{"id":"a","text":"Binders"},{"id":"b","text":"Packers"},{"id":"c","text":"Droppers"},{"id":"d","text":"Keyloggers"}],"correct_option_id":"b","explanation":"Packers","num":"10"},{"id":"q10","question_type":"multiple_choice","prompt":"Trong phương pháp dò tìm mã độc suy luận (Heuristics), công nghệ DNA Detections hoạt động dựa trên cơ chế nào?","options":[{"id":"a","text":"Chỉ dựa vào tên miền (domain) chứa mã độc."},{"id":"b","text":"Trích xuất các \"gen\" định nghĩa hành vi và tính chất của mã độc để nhận diện cả các biến thể mới thuộc cùng một dòng."},{"id":"c","text":"Quét các cổng kết nối vật lý trên router."},{"id":"d","text":"Yêu cầu nhập mật khẩu bảo vệ BIOS."}],"correct_option_id":"b","explanation":"Trích xuất các \"gen\" định nghĩa hành vi và tính chất của mã độc để nhận diện cả các biến thể mới thuộc cùng một dòng.","num":"11"},{"id":"q11","question_type":"multiple_choice","prompt":"Phân tích động (Dynamic Analysis) bắt buộc phải thực hiện trong môi trường nào sau đây?","options":[{"id":"a","text":"Trực tiếp trên máy tính làm việc hàng ngày của kỹ sư."},{"id":"b","text":"Trên các hệ thống máy ảo hoặc Sandbox được kiểm soát nghiêm ngặt và cách ly khỏi mạng thực."},{"id":"c","text":"Trong một trình duyệt web mở chế độ ẩn danh (Incognito)."},{"id":"d","text":"Trên nền tại đám mây công cộng (Public Cloud)."}],"correct_option_id":"b","explanation":"Trên các hệ thống máy ảo hoặc Sandbox được kiểm soát nghiêm ngặt và cách ly khỏi mạng thực.","num":"12"},{"id":"q12","question_type":"multiple_choice","prompt":"Công cụ nào thường được sử dụng trong quá trình \"Phân tích tĩnh nâng cao\" để dịch mã nhị phân thành mã hợp ngữ (Assembly)?","options":[{"id":"a","text":"Wireshark"},{"id":"b","text":"Nmap"},{"id":"c","text":"Ghidra hoặc IDA Pro"},{"id":"d","text":"HIPS"}],"correct_option_id":"c","explanation":"Ghidra hoặc IDA Pro","num":"13"},{"id":"q13","question_type":"multiple_choice","prompt":"Tại sao công nghệ \"Quét bộ nhớ nâng cao\" (Advanced Memory Scanner) lại đóng vai trò tối thượng trong hệ thống phòng thủ đa lớp?","options":[{"id":"a","text":"Vì nó giúp phát hiện các mã độc \"Vô tệp\" (Fileless) hoạt động hoàn toàn trên RAM và bắt giữ mã độc đúng lúc nó cởi bỏ lớp mã hóa (decloak)."},{"id":"b","text":"Vì nó giúp sao lưu dữ liệu bộ nhớ trước khi Ransomware tấn công."},{"id":"c","text":"Vì nó có thể khôi phục lại mật khẩu Windows đã bị xóa."},{"id":"d","text":"Vì nó loại bỏ các tập tin nhật ký (log) dư thừa."}],"correct_option_id":"a","explanation":"Vì nó giúp phát hiện các mã độc \"Vô tệp\" (Fileless) hoạt động hoàn toàn trên RAM và bắt giữ mã độc đúng lúc nó cởi bỏ lớp mã hóa (decloak).","num":"14"},{"id":"q14","question_type":"multiple_choice","prompt":"Dòng mã độc \"Metamorphic Malware\" (Mã độc siêu đa hình) có đặc điểm kỹ thuật gì khiến việc dò tìm bằng chữ ký vô dụng?","options":[{"id":"a","text":"Nó không chứa bất kỳ đoạn mã nào mà chỉ chứa file hình ảnh."},{"id":"b","text":"Nó xóa hoàn toàn hệ điều hành trước khi phần mềm diệt virus kịp khởi động."},{"id":"c","text":"Nó có khả năng tự thay đổi cấu trúc mã nguồn (code) của chính nó ở mỗi vòng đời lây nhiễm nhưng vẫn giữ nguyên tính năng phá hoại."},{"id":"d","text":"Nó yêu cầu nạn nhân tự tay vô hiệu hóa hệ thống phòng thủ."}],"correct_option_id":"c","explanation":"Nó có khả năng tự thay đổi cấu trúc mã nguồn (code) của chính nó ở mỗi vòng đời lây nhiễm nhưng vẫn giữ nguyên tính năng phá hoại.","num":"15"},{"id":"q15","question_type":"multiple_choice","prompt":"Cấu trúc của một bộ quy tắc (rule) tiêu chuẩn trong IDS như Snort được chia thành các thành phần nào?","options":[{"id":"a","text":"Rule Action và Rule Body."},{"id":"b","text":"Rule Header và Rule Options."},{"id":"c","text":"Tiêu đề gói (Packet header) và Tải trọng (Payload)."},{"id":"d","text":"Lớp Mạng và Lớp Ứng dụng."}],"correct_option_id":"b","explanation":"Rule Header và Rule Options.","num":"19"},{"id":"q16","question_type":"multiple_choice","prompt":"Sự khác biệt trong cách xử lý tình báo mối đe dọa (Threat Intelligence) của NGFW so với tường lửa truyền thống?","options":[{"id":"a","text":"NGFW chỉ quét virus thủ công bằng đĩa CD."},{"id":"b","text":"NGFW có khả năng tiêu thụ dữ liệu từ các đám mây toàn cầu và tự động cập nhật chữ ký chống tấn công theo thời gian thực."},{"id":"c","text":"NGFW ngăn chặn hiệu quả các cuộc tấn công Zero-day mà không cần quản trị viên can thiệp."},{"id":"d","text":"Tường lửa truyền thống xử lý Threat Intel tự động hơn NGFW."}],"correct_option_id":"b","explanation":"NGFW có khả năng tiêu thụ dữ liệu từ các đám mây toàn cầu và tự động cập nhật chữ ký chống tấn công theo thời gian thực.","num":"22"},{"id":"q17","question_type":"multiple_choice","prompt":"Quy tắc Dọn dẹp (Cleanup Rule) nên được thiết lập ở vị trí nào trong bảng quy tắc tường lửa?","options":[{"id":"a","text":"Dòng đầu tiên."},{"id":"b","text":"Ngay sau Quy tắc Tàng hình (Stealth Rule)."},{"id":"c","text":"Nằm ở đáy danh sách (vị trí cuối cùng)."},{"id":"d","text":"Nằm giữa các quy tắc Allow và Deny."}],"correct_option_id":"c","explanation":"Nằm ở đáy danh sách (vị trí cuối cùng).","num":"23"},{"id":"q18","question_type":"multiple_choice","prompt":"Khái niệm Mục tiêu Thời gian Phục hồi (RTO) dùng để đo lường yếu tố gì?","options":[{"id":"a","text":"Lượng dữ liệu tối đa bị mất đi kể từ bản sao lưu cuối."},{"id":"b","text":"Tần suất cần thiết để thực hiện sao lưu dữ liệu."},{"id":"c","text":"Thời gian \"thực\" tối đa mà hệ thống có thể bị gián đoạn trước khi gây thiệt hại nghiêm trọng."},{"id":"d","text":"Thời gian trung bình để phát hiện ra một cuộc tấn công mạng."}],"correct_option_id":"c","explanation":"Thời gian \"thực\" tối đa mà hệ thống có thể bị gián đoạn trước khi gây thiệt hại nghiêm trọng.","num":"26"},{"id":"q19","question_type":"multiple_choice","prompt":"Việc nhân viên sử dụng các công cụ AI không được bộ phận CNTT kiểm duyệt (Shadow AI) gây ra bao nhiêu % vụ rò rỉ dữ liệu năm 2025?","options":[{"id":"a","text":"15%"},{"id":"b","text":"20%"},{"id":"c","text":"35%"},{"id":"d","text":"40%"}],"correct_option_id":"c","explanation":"35%","num":"29"},{"id":"q20","question_type":"multiple_choice","prompt":"\"False Positive\" (Dương tính giả) trong quá trình dò tìm mã độc được hiểu là gì?","options":[{"id":"a","text":"Hệ thống xác định đúng một tệp tin là an toàn."},{"id":"b","text":"Hệ thống bỏ sót một mã độc thực sự."},{"id":"c","text":"Hệ thống nhận diện đúng một mối đe dọa."},{"id":"d","text":"Hệ thống cảnh báo nhầm một tệp tin/hành vi an toàn là mối đe dọa."}],"correct_option_id":"d","explanation":"Hệ thống cảnh báo nhầm một tệp tin/hành vi an toàn là mối đe dọa.","num":"30"},{"id":"q21","question_type":"multiple_choice","prompt":"Sự kiện \"False Negative\" (Âm tính giả) trong an toàn thông tin mang lại rủi ro nào?","options":[{"id":"a","text":"Người dùng bị chặn truy cập vào website của ngân hàng."},{"id":"b","text":"Hệ thống phòng thủ bỏ sót một mối đe dọa thực sự, tạo điều kiện cho tin tặc lọt vào mạng."},{"id":"c","text":"Bộ phận IT tốn hàng giờ đồng hồ để điều tra một sự kiện."},{"id":"d","text":"Tường lửa tự động sập nguồn hệ thống máy chủ."}],"correct_option_id":"b","explanation":"Hệ thống phòng thủ bỏ sót một mối đe dọa thực sự, tạo điều kiện cho tin tặc lọt vào mạng.","num":"31"},{"id":"q22","question_type":"multiple_choice","prompt":"Sự khác biệt cốt lõi về bản chất đo lường giữa RPO và RTO là gì?","options":[{"id":"a","text":"RPO đo lường hướng tiến về tương lai, RTO đo lường ngược về quá khứ."},{"id":"b","text":"Cả hai đều tập trung vào việc khôi phục ứng dụng hơn dữ liệu."},{"id":"c","text":"RPO đo lường ngược về quá khứ để xác định lượng dữ liệu mất đi; RTO đo lường tiến về tương lai để xác định thời gian gián đoạn."},{"id":"d","text":"RPO chỉ dùng cho đám mây, RTO dùng cho máy chủ vật lý."}],"correct_option_id":"c","explanation":"RPO đo lường ngược về quá khứ để xác định lượng dữ liệu mất đi; RTO đo lường tiến về tương lai để xác định thời gian gián đoạn.","num":"32"},{"id":"q23","question_type":"multiple_choice","prompt":"Việc áp dụng tiêu chuẩn IEC 62443 vào Kế hoạch Ứng phó Sự cố (IRP) của hệ thống OT mang ý nghĩa sống còn nào?","options":[{"id":"a","text":"Bắt buộc sao lưu toàn bộ dữ liệu máy móc lên đám mây cứ mỗi 5 phút."},{"id":"b","text":"Ưu tiên quản lý rủi ro và phân vùng mạng để quá trình cô lập mã độc không vô tình làm gián đoạn dây chuyền sản xuất vật lý."},{"id":"c","text":"Ngắt kết nối toàn bộ nhà máy khỏi Internet ngay khi có cảnh báo."},{"id":"d","text":"Buộc mọi máy móc tự động sử dụng xác thực đa yếu tố."}],"correct_option_id":"b","explanation":"Ưu tiên quản lý rủi ro và phân vùng mạng để quá trình cô lập mã độc không vô tình làm gián đoạn dây chuyền sản xuất vật lý.","num":"33"},{"id":"q24","question_type":"multiple_choice","prompt":"Theo tiêu chuẩn kiểm toán hệ thống bảo mật như ISO 27001 và NIST 800-41, hoạt động thay đổi cấu hình tường lửa phải đáp ứng yêu cầu gì?","options":[{"id":"a","text":"Mọi sự thay đổi phải trải qua quá trình kiểm soát rủi ro (change management process)"},{"id":"b","text":"Cho phép nhân sự IT bất kỳ tự do thay đổi quy tắc mà không cần ghi chép"},{"id":"c","text":"Thao tác thay đổi phải được lưu trữ tại hệ thống nhật ký kiểm toán (Audit Trail)"},{"id":"d","text":"Tự động hóa giám sát và tích hợp cảnh báo vi phạm liên tục"}],"correct_option_id":"a","explanation":"Mọi sự thay đổi phải trải qua quá trình kiểm soát rủi ro (change management process)","num":null},{"id":"q25","question_type":"multiple_choice","prompt":"Thành phần HIPS sử dụng kỹ thuật Thanh tra Hành vi Sâu (DBI) hoạt động ở chế độ nào của hệ điều hành để chống lại kỹ thuật lẩn tránh?","options":[{"id":"a","text":"Chế độ Kernel (Kernel-mode) của BIOS"},{"id":"b","text":"Chế độ Người dùng (User-mode) để giám sát chi tiết, vi mô tất cả quá trình thực thi không xác định"},{"id":"c","text":"Chế độ Mạng (Network-mode)"},{"id":"d","text":"Chế độ An toàn (Safe Mode)"}],"correct_option_id":"b","explanation":"Chế độ Người dùng (User-mode) để giám sát chi tiết, vi mô tất cả quá trình thực thi không xác định","num":null},{"id":"q26","question_type":"multiple_choice","prompt":"Dịch vụ Quản trị rủi ro tự động thuê ngoài (MDR) tập trung vào việc tối ưu và giảm thiểu 2 chỉ số thời gian then chốt nào?","options":[{"id":"a","text":"RTO và RPO"},{"id":"b","text":"MTTD (Thời gian trung bình phát hiện) và MTTR (Thời gian trung bình phản ứng)"},{"id":"c","text":"ROI (Tỷ suất hoàn vốn) và TCO (Tổng chi phí sở hữu)"},{"id":"d","text":"SLA (Thỏa thuận cấp độ dịch vụ) và SLO (Mục tiêu cấp độ dịch vụ)"}],"correct_option_id":"b","explanation":"MTTD (Thời gian trung bình phát hiện) và MTTR (Thời gian trung bình phản ứng)","num":null},{"id":"q27","question_type":"multiple_choice","prompt":"Kỹ thuật Obfuscation (Làm rối mã) thường được thực hiện bởi công cụ ngụy trang nào, và biểu hiện rõ ràng nhất của nó là gì?","options":[{"id":"a","text":"Packer; Tăng gấp đôi kích thước tệp đĩa cứng"},{"id":"b","text":"Crypter; Làm phẳng luồng điều khiển (control flow flattening), đổi tên biến vô nghĩa"},{"id":"c","text":"Bootkit; Đảo ngược bảng phân vùng ổ đĩa"},{"id":"d","text":"Dropper; Gửi vô số gói tin ICMP ra ngoài Internet"}],"correct_option_id":"b","explanation":"Crypter; Làm phẳng luồng điều khiển (control flow flattening), đổi tên biến vô nghĩa","num":null},{"id":"q28","question_type":"multiple_choice","prompt":"Theo chuẩn mực thiết kế (SANS), trong khu vực Quy tắc Tiêu chuẩn (Standard Rules), nhóm quy tắc nào phải đặt ở vị trí cao hơn?","options":[{"id":"a","text":"Quy tắc duyệt web HTTPS của nhân viên"},{"id":"b","text":"Quy tắc chống giả mạo IP (Anti-spoofing) và từ chối các địa chỉ bất hợp pháp"},{"id":"c","text":"Quy tắc ngăn chặn các dịch vụ chứa lỗ hổng (như DNS Zone Transfers, RPC)"},{"id":"d","text":"Quy tắc cho phép khách truy cập mạng Wi-Fi"}],"correct_option_id":"b","explanation":"Quy tắc chống giả mạo IP (Anti-spoofing) và từ chối các địa chỉ bất hợp pháp","num":null},{"id":"q29","question_type":"multiple_choice","prompt":"Sự nguy hiểm nếu kiến trúc Screened Host bị tin tặc thỏa hiệp thành công máy chủ pháo đài (Bastion Host) là gì?","options":[{"id":"a","text":"Mạng sẽ chuyển sang cấu hình Screened Subnet tự động"},{"id":"b","text":"Hacker có được một \"chân đế\" vững chắc và không còn rào cản nào ngăn chúng tấn công mạng LAN nội bộ"},{"id":"c","text":"Thiết bị định tuyến biên (Router) sẽ lập tức bị cháy"},{"id":"d","text":"Đây được coi là một \"Điểm lỗi duy nhất\" (Single point of failure) của kiến trúc"}],"correct_option_id":"b","explanation":"Hacker có được một \"chân đế\" vững chắc và không còn rào cản nào ngăn chúng tấn công mạng LAN nội bộ","num":null},{"id":"q30","question_type":"multiple_choice","prompt":"Theo báo cáo của IBM năm 2025, chi phí trung bình của một vụ vi phạm dữ liệu trên toàn cầu là bao nhiêu?","options":[{"id":"a","text":"10,22 triệu USD"},{"id":"b","text":"4,88 triệu USD"},{"id":"c","text":"9,77 triệu USD"},{"id":"d","text":"4,44 triệu USD"}],"correct_option_id":"b","explanation":"4,88 triệu USD","num":null},{"id":"q31","question_type":"multiple_choice","prompt":"Loại lưu lượng mạng nào là nguyên nhân chính khiến các hệ thống NIDS truyền thống bị \"mù\"?","options":[{"id":"a","text":"Lưu lượng truyền tải qua giao thức ICMP"},{"id":"b","text":"Các phiên truy vấn cơ sở dữ liệu nội bộ"},{"id":"c","text":"Lưu lượng mạng được mã hóa như TLS 1.3 và HTTPS"},{"id":"d","text":"Các gói tin quá dài"}],"correct_option_id":"c","explanation":"Lưu lượng mạng được mã hóa như TLS 1.3 và HTTPS","num":null},{"id":"q32","question_type":"multiple_choice","prompt":"Tính năng Kiểm tra Gói tin Sâu (DPI) của NGFW cho phép hệ thống can thiệp đến lớp nào của mô hình OSI?","options":[{"id":"a","text":"Lớp 3 (Network Layer)"},{"id":"b","text":"Lớp 4 (Transport Layer)"},{"id":"c","text":"Lớp 5 (Session Layer)"},{"id":"d","text":"Lớp 7 (Application Layer)"}],"correct_option_id":"d","explanation":"Lớp 7 (Application Layer)","num":null},{"id":"q33","question_type":"multiple_choice","prompt":"Trong Kế hoạch Ứng phó Sự cố (IRP) theo NIST SP 800-61, mục tiêu chính của giai đoạn \"Cô lập và Khắc phục\" là gì?","options":[{"id":"a","text":"Xác định xem hệ thống có thực sự bị tấn công hay không dựa trên log"},{"id":"b","text":"Khoanh vùng sự lây lan của mã độc trong mức độ rủi ro có thể chấp nhận được"},{"id":"c","text":"Đánh giá thiệt hại tài chính và báo cáo cho ban giám đốc"},{"id":"d","text":"Thu thập các số liệu (metrics) để lập kế hoạch đào tạo nhân sự"}],"correct_option_id":"b","explanation":"Khoanh vùng sự lây lan của mã độc trong mức độ rủi ro có thể chấp nhận được","num":null},{"id":"q34","question_type":"multiple_choice","prompt":"Quy tắc Tàng hình (Stealth Rule) trong cấu hình tường lửa thường mang chức năng gì?","options":[{"id":"a","text":"Giấu địa chỉ MAC của các thiết bị mạng"},{"id":"b","text":"Từ chối mọi yêu cầu kết nối nhắm trực tiếp vào bản thân thiết bị tường lửa từ các nguồn không xác định"},{"id":"c","text":"Ngăn chặn nỗ lực quét thăm dò lỗ hổng (scan) của tin tặc lên thiết bị bảo mật"},{"id":"d","text":"Xóa định kỳ nhật ký hệ thống"}],"correct_option_id":"b","explanation":"Từ chối mọi yêu cầu kết nối nhắm trực tiếp vào bản thân thiết bị tường lửa từ các nguồn không xác định","num":null},{"id":"q35","question_type":"multiple_choice","prompt":"Theo khoản 3 Điều 25 Luật An ninh mạng 2025, doanh nghiệp nước ngoài phải lập văn phòng tại VN khi nào?","options":[{"id":"a","text":"Kinh doanh có lãi tại Việt Nam trên 1 năm liên tục và có hơn 1 triệu người dùng"},{"id":"b","text":"Dịch vụ bị sử dụng vi phạm pháp luật và đã bị yêu cầu phối hợp quá 3 lần trong 6 tháng nhưng không khắc phục"},{"id":"c","text":"Tổ chức các chiến dịch thu thập dữ liệu sinh trắc học của công dân Việt Nam"},{"id":"d","text":"Không sử dụng máy chủ vật lý được đặt trong lãnh thổ Việt Nam"}],"correct_option_id":"b","explanation":"Dịch vụ bị sử dụng vi phạm pháp luật và đã bị yêu cầu phối hợp quá 3 lần trong 6 tháng nhưng không khắc phục","num":null},{"id":"q36","question_type":"multiple_choice","prompt":"Dòng mã độc nào xuất hiện năm 1986 là đại diện đầu tiên cho loại hình lây nhiễm vào \"Boot Sector\"?","options":[{"id":"a","text":"Stuxnet"},{"id":"b","text":"Morris Worm"},{"id":"c","text":"Elk Cloner"},{"id":"d","text":"Brain Virus"}],"correct_option_id":"d","explanation":"Brain Virus","num":null},{"id":"q37","question_type":"multiple_choice","prompt":"Khi triển khai SSL/TLS Decryption trên NGFW, tại sao hệ thống thường bị nghẽn cổ chai?","options":[{"id":"a","text":"Do chuẩn TLS 1.3 không cho phép tường lửa hoạt động"},{"id":"b","text":"Do các thuật toán mã hóa/giải mã tiêu tốn khối lượng khổng lồ tài nguyên CPU"},{"id":"c","text":"Bởi vì tường lửa bắt buộc phải tắt công cụ DPI khi phân tích SSL"},{"id":"d","text":"Do NGFW đóng vai trò Man-in-the-Middle (MITM) chặn dòng dữ liệu"}],"correct_option_id":"b","explanation":"Do các thuật toán mã hóa/giải mã tiêu tốn khối lượng khổng lồ tài nguyên CPU","num":null},{"id":"q38","question_type":"multiple_choice","prompt":"Đặc trưng của Cổng cấp mạch (Circuit-Level Gateway) là gì?","options":[{"id":"a","text":"Kiểm tra nội dung mã HTML của mọi trang web"},{"id":"b","text":"Xác minh độ tin cậy thông qua phân tích quá trình bắt tay TCP (SYN/ACK)"},{"id":"c","text":"Chặn hiệu quả các cuộc tấn công từ chối dịch vụ dạng SYN flood"},{"id":"d","text":"Vẫn tiếp tục kiểm tra dữ liệu tải trọng (payload) sau khi phiên đã mở"}],"correct_option_id":"b","explanation":"Xác minh độ tin cậy thông qua phân tích quá trình bắt tay TCP (SYN/ACK)","num":null},{"id":"q39","question_type":"multiple_choice","prompt":"Trong NIST CSF 2.0, chức năng cốt lõi thứ 6 mới bổ sung là gì?","options":[{"id":"a","text":"Anticipate (Dự đoán)"},{"id":"b","text":"Prevent (Ngăn ngừa)"},{"id":"c","text":"Govern (Quản trị)"},{"id":"d","text":"Isolate (Cách ly)"}],"correct_option_id":"c","explanation":"Govern (Quản trị)","num":null},{"id":"q40","question_type":"multiple_choice","prompt":"Theo Luật An ninh mạng 2025, cơ quan nào quản lý nhà nước tập trung về an toàn thông tin mạng?","options":[{"id":"a","text":"Bộ Thông tin và Truyền thông"},{"id":"b","text":"Bộ Công an"},{"id":"c","text":"Bộ Quốc phòng"},{"id":"d","text":"Ban Cơ yếu Chính phủ"}],"correct_option_id":"b","explanation":"Bộ Công an","num":null},{"id":"q41","question_type":"multiple_choice","prompt":"Mục tiêu vận hành chính của Tường lửa (Firewall) truyền thống là gì?","options":[{"id":"a","text":"Phân tích sâu nội dung tải trọng gói tin (DPI)"},{"id":"b","text":"Kiểm soát luồng dữ liệu vào/ra dựa trên chính sách kiểm soát truy cập định sẵn"},{"id":"c","text":"Chủ động đóng băng phiên giao thức TCP thông qua AI"},{"id":"d","text":"Thăm dò cấu trúc tự nhiên của dữ liệu để tìm dị biệt"}],"correct_option_id":"b","explanation":"Kiểm soát luồng dữ liệu vào/ra dựa trên chính sách kiểm soát truy cập định sẵn","num":null}];
+
+let idx = 0;
+let answered = new Array(QUESTIONS.length).fill(null); // store chosen option id
+let score = 0;
+
+const card = document.getElementById('card');
+const progressFill = document.getElementById('progressFill');
+const progressNum = document.getElementById('progressNum');
+const modeTag = document.getElementById('modeTag');
+
+function letterLabel(i){ return ['A','B','C','D','E','F'][i] || (i+1); }
+
+function renderQuestion(){
+  modeTag.textContent = 'Trắc nghiệm';
+  const q = QUESTIONS[idx];
+  progressFill.style.width = ((idx) / QUESTIONS.length * 100) + '%';
+  progressNum.textContent = (idx+1) + ' / ' + QUESTIONS.length;
+
+  const chosen = answered[idx];
+
+  let optsHtml = q.options.map((o, i) => {
+    let cls = 'opt';
+    let disabled = chosen ? 'disabled' : '';
+    if(chosen){
+      if(o.id === q.correct_option_id) cls += ' correct';
+      else if(o.id === chosen) cls += ' wrong';
+      else cls += ' dim';
+    }
+    return `<button class="${cls}" ${disabled} data-oid="${o.id}" onclick="selectOption('${o.id}')">
+      <span class="letter">${letterLabel(i)}</span>
+      <span>${escapeHtml(o.text)}</span>
+    </button>`;
+  }).join('');
+
+  let feedbackHtml = '';
+  if(chosen){
+    const isRight = chosen === q.correct_option_id;
+    feedbackHtml = `<div class="feedback show">
+      <span class="verdict ${isRight ? 'right' : 'wrong'}">${isRight ? 'Chính xác.' : 'Chưa đúng.'}</span>
+      ${escapeHtml(q.explanation)}
+    </div>`;
+  }
+
+  card.innerHTML = `
+    <div class="qnum">${q.num ? 'Câu ' + q.num : 'Câu ' + (idx+1)}</div>
+    <p class="prompt">${escapeHtml(q.prompt)}</p>
+    <div class="options">${optsHtml}</div>
+    ${feedbackHtml}
+    <div class="nav-row">
+      <button class="btn ghost" id="prevBtn" onclick="prevQuestion()" ${idx===0?'disabled':''}>Câu trước</button>
+      <button class="btn primary" id="nextBtn" onclick="nextQuestion()" ${chosen?'':'disabled'}>${idx === QUESTIONS.length-1 ? 'Xem kết quả' : 'Câu tiếp'}</button>
+    </div>
+  `;
+}
+
+function selectOption(oid){
+  if(answered[idx]) return;
+  answered[idx] = oid;
+  renderQuestion();
+}
+
+function nextQuestion(){
+  if(!answered[idx]) return;
+  if(idx === QUESTIONS.length - 1){
+    renderResult();
+    return;
+  }
+  idx++;
+  renderQuestion();
+}
+
+function prevQuestion(){
+  if(idx === 0) return;
+  idx--;
+  renderQuestion();
+}
+
+function renderResult(){
+  modeTag.textContent = 'Kết quả';
+  progressFill.style.width = '100%';
+  progressNum.textContent = QUESTIONS.length + ' / ' + QUESTIONS.length;
+
+  let correctCount = 0;
+  let missed = [];
+  QUESTIONS.forEach((q, i) => {
+    if(answered[i] === q.correct_option_id) correctCount++;
+    else missed.push(q);
+  });
+
+  const pct = Math.round(correctCount / QUESTIONS.length * 100);
+
+  let missedHtml = '';
+  if(missed.length){
+    missedHtml = `<div class="missed-list">` + missed.map(q =>
+      `<div class="missed-item"><b>${q.num ? 'Câu '+q.num : ''}</b> ${escapeHtml(q.prompt)} — đáp án đúng: <b>${escapeHtml(q.options.find(o=>o.id===q.correct_option_id).text)}</b></div>`
+    ).join('') + `</div>`;
+  } else {
+    missedHtml = `<p>Không bỏ sót câu nào — trọn vẹn.</p>`;
+  }
+
+  card.innerHTML = `
+    <div class="result">
+      <div class="qnum">Hoàn thành</div>
+      <div class="score">${correctCount}<span>/${QUESTIONS.length}</span></div>
+      <p>${pct}% số câu trả lời đúng ở lần làm này.</p>
+      ${missedHtml}
+      <div class="result-actions">
+        <button class="btn primary" onclick="restart()">Làm lại từ đầu</button>
+      </div>
+    </div>
+  `;
+}
+
+function restart(){
+  idx = 0;
+  answered = new Array(QUESTIONS.length).fill(null);
+  renderQuestion();
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+renderQuestion();
+</script>
+</body>
+</html>
